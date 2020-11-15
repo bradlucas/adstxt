@@ -41,7 +41,7 @@
   :source-paths ["src/clj"]
   :test-paths ["test/clj"]
   :resource-paths ["resources"]
-  :target-path "target/%s/"
+  ;; :target-path "target/%s/"
   :main ^:skip-aot adstxt.core
   :migratus {:store :database :db ~(get (System/getenv) "DATABASE_URL")}
 
@@ -52,7 +52,7 @@
   :profiles
   {:uberjar {:omit-source true
              :aot :all
-             :uberjar-name "adstxt.jar"
+             ;; :uberjar-name "adstxt.jar"
              :source-paths ["env/prod/clj"]
              :resource-paths ["env/prod/resources"]}
 
