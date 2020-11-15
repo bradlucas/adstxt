@@ -1,7 +1,7 @@
-(ns ads-txt.routes.domains
-  (:require [ads-txt.layout :as layout]
+(ns adstxt.routes.domains
+  (:require [adstxt.layout :as layout]
             [compojure.core :refer [defroutes GET]]
-            [ads-txt.db.core :as db]
+            [adstxt.db.core :as db]
             [clojure.data.csv :as csv]))
 
 
@@ -22,7 +22,7 @@
      :headers {"Content-Type" "text/csv; charset=utf-8"
                "Content-Length"      (str (count data))
                "Cache-Control"       "no-cache"
-               "Content-Disposition" (str "attachment; filename=ads-txt-domains.csv")}
+               "Content-Disposition" (str "attachment; filename=adstxt-domains.csv")}
      :body (domain-data-csv data)}
     ))
 

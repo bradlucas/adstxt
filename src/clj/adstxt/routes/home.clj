@@ -1,7 +1,7 @@
-(ns ads-txt.routes.home
-  (:require [ads-txt.crawl :as c]
-            [ads-txt.db.core :as db]
-            [ads-txt.layout :as layout]
+(ns adstxt.routes.home
+  (:require [adstxt.crawl :as c]
+            [adstxt.db.core :as db]
+            [adstxt.layout :as layout]
             [compojure.core :refer [defroutes GET POST]]))
 
 

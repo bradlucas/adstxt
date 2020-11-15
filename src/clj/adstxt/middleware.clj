@@ -1,15 +1,15 @@
-(ns ads-txt.middleware
-  (:require [ads-txt.env :refer [defaults]]
+(ns adstxt.middleware
+  (:require [adstxt.env :refer [defaults]]
             [cognitect.transit :as transit]
             [clojure.tools.logging :as log]
-            [ads-txt.layout :refer [*app-context* error-page]]
+            [adstxt.layout :refer [*app-context* error-page]]
             [ring.middleware.anti-forgery :refer [wrap-anti-forgery]]
             [ring.middleware.webjars :refer [wrap-webjars]]
             [muuntaja.core :as muuntaja]
             [muuntaja.format.json :as json-format]
             [muuntaja.format.transit :as transit-format]
             [muuntaja.middleware :refer [wrap-format wrap-params]]
-            [ads-txt.config :refer [env]]
+            [adstxt.config :refer [env]]
             [ring.middleware.flash :refer [wrap-flash]]
             [immutant.web.middleware :refer [wrap-session]]
             [ring.middleware.defaults :refer [site-defaults wrap-defaults]])

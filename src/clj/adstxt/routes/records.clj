@@ -1,6 +1,6 @@
-(ns ads-txt.routes.records
-  (:require [ads-txt.layout :as layout]
-            [ads-txt.db.core :as db]
+(ns adstxt.routes.records
+  (:require [adstxt.layout :as layout]
+            [adstxt.db.core :as db]
             [compojure.core :refer [defroutes GET]]
             [clojure.data.csv :as csv]))
 
@@ -20,7 +20,7 @@
   (let [data (if-let [id id]
                (db/get-records-for-domain-id {:id (Integer/parseInt id)})
                (db/get-records))
-        name (format "ads-txt-records-%s.csv" (if-let [id id]
+        name (format "adstxt-records-%s.csv" (if-let [id id]
                                                 (:name (db/get-domain-name {:id (Integer/parseInt id)}))
                                                "all"))]
     {:status 200

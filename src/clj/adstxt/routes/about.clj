@@ -1,5 +1,5 @@
-(ns ads-txt.routes.about
-  (:require [ads-txt.layout :as layout]
+(ns adstxt.routes.about
+  (:require [adstxt.layout :as layout]
             [compojure.core :refer [defroutes GET]]))
 
 

@@ -1,14 +1,14 @@
-(ns ads-txt.core
-  (:require [ads-txt.handler :as handler]
+(ns adstxt.core
+  (:require [adstxt.handler :as handler]
             [luminus.repl-server :as repl]
             [luminus.http-server :as http]
             [luminus-migrations.core :as migrations]
-            [ads-txt.config :refer [env]]
+            [adstxt.config :refer [env]]
             [clojure.tools.cli :refer [parse-opts]]
             [clojure.tools.logging :as log]
             [mount.core :as mount]
             [clojure.java.io :refer [reader]]
-            [ads-txt.crawl :as c]
+            [adstxt.crawl :as c]
             )
   (:gen-class))
 
@@ -55,87 +55,87 @@
 
 
 (defn crawl-targets [targets-list]
-  (mount/start #'ads-txt.config/env)
-  (mount/start #'ads-txt.db.core/*db*)
+  (mount/start #'adstxt.config/env)
+  (mount/start #'adstxt.db.core/*db*)
   (with-open [rdr (reader targets-list)]
     (doseq [line (line-seq rdr)]
       ;; (h/process-domain! {:params {:name (clojure.string/trim line)}})
       ;;      {:params {:name "wordpress.com"}}
       (let [domain (clojure.string/trim line)]
         (c/crawl-domain! domain))))
-  (mount/stop #'ads-txt.db.core/*db*))
+  (mount/stop #'adstxt.db.core/*db*))
 
 (defn load-domains [domains-list]
   (println domains-list)
-  (mount/start #'ads-txt.config/env)
-  (mount/start #'ads-txt.db.core/*db*)
+  (mount/start #'adstxt.config/env)
+  (mount/start #'adstxt.db.core/*db*)
   (with-open [rdr (reader domains-list)]
     (doseq [line (line-seq rdr)]
       (let [domain (clojure.string/trim line)]
         (c/save-new-domain! domain))))
-  (mount/stop #'ads-txt.db.core/*db*))
+  (mount/stop #'adstxt.db.core/*db*))
 
 (defn crawl-domain [domain]
   (println (format "crawl-domain %s" domain))
-  (mount/start #'ads-txt.config/env)
-  (mount/start #'ads-txt.db.core/*db*)
+  (mount/start #'adstxt.config/env)
+  (mount/start #'adstxt.db.core/*db*)
   (c/crawl-domain! domain)
-  (mount/stop #'ads-txt.db.core/*db*))
+  (mount/stop #'adstxt.db.core/*db*))
 
 (defn crawl-new-domains []
   (println "crawl-new-domains")
-  (mount/start #'ads-txt.config/env)
-  (mount/start #'ads-txt.db.core/*db*)
+  (mount/start #'adstxt.config/env)
+  (mount/start #'adstxt.db.core/*db*)
   (c/crawl-new-domains)
-  (mount/stop #'ads-txt.db.core/*db*))
+  (mount/stop #'adstxt.db.core/*db*))
 
 (defn process-cmdline-args [args]
   (cond
     (some #{"init"} args)
     (do
-      (mount/start #'ads-txt.config/env)
+      (mount/start #'adstxt.config/env)
       (migrations/init (select-keys env [:database-url :init-script]))
       (System/exit 0))
     (some #{"migrate" "rollback"} args)
     (do
-      (mount/start #'ads-txt.config/env)
+      (mount/start #'adstxt.config/env)
       (migrations/migrate args (select-keys env [:database-url]))
       (System/exit 0))
     (some #{"truncate"} args)
     (do
-      (mount/start #'ads-txt.config/env)
-      (mount/start #'ads-txt.db.core/*db*)
-      (ads-txt.db.core/truncate-tables)
-      (ads-txt.db.core/reset-domains-index)
-      (mount/stop #'ads-txt.db.core/*db*)
+      (mount/start #'adstxt.config/env)
+      (mount/start #'adstxt.db.core/*db*)
+      (adstxt.db.core/truncate-tables)
+      (adstxt.db.core/reset-domains-index)
+      (mount/stop #'adstxt.db.core/*db*)
       (System/exit 0))
     (some #{"crawl"} args)
     (do
-      (mount/start #'ads-txt.config/env)
-      (mount/start #'ads-txt.db.core/*db*)
+      (mount/start #'adstxt.config/env)
+      (mount/start #'adstxt.db.core/*db*)
       (c/crawl-all-domains)
-      (mount/stop #'ads-txt.db.core/*db*)
+      (mount/stop #'adstxt.db.core/*db*)
       (System/exit 0))
     (some #{"crawlnew"} args)
     (do
-      (mount/start #'ads-txt.config/env)
-      (mount/start #'ads-txt.db.core/*db*)
+      (mount/start #'adstxt.config/env)
+      (mount/start #'adstxt.db.core/*db*)
       (crawl-new-domains)
-      (mount/stop #'ads-txt.db.core/*db*)
+      (mount/stop #'adstxt.db.core/*db*)
       (System/exit 0))
     (some #{"report-domains"} args)
     (do
-      (mount/start #'ads-txt.config/env)
-      (mount/start #'ads-txt.db.core/*db*)
+      (mount/start #'adstxt.config/env)
+      (mount/start #'adstxt.db.core/*db*)
       (c/report-domains-status)
-      (mount/stop #'ads-txt.db.core/*db*)
+      (mount/stop #'adstxt.db.core/*db*)
       (System/exit 0))
     (some #{"report-records"} args)
     (do
-      (mount/start #'ads-txt.config/env)
-      (mount/start #'ads-txt.db.core/*db*)
+      (mount/start #'adstxt.config/env)
+      (mount/start #'adstxt.db.core/*db*)
       (c/report-records-domains-status)
-      (mount/stop #'ads-txt.db.core/*db*)
+      (mount/stop #'adstxt.db.core/*db*)
       (System/exit 0))
     :else
     (start-app args)))
@@ -156,5 +156,5 @@
 
 
 (defn init []
-  (mount/start #'ads-txt.config/env)
-  (mount/start #'ads-txt.db.core/*db*))
+  (mount/start #'adstxt.config/env)
+  (mount/start #'adstxt.db.core/*db*))
