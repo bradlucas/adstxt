@@ -1,8 +1,8 @@
-(ns ads-txt.routes.api
+(ns adstxt.routes.api
   (:require [compojure.core :refer [defroutes GET POST]]
             [doric.core :refer [table]]
-            [ads-txt.db.core :as db]
-            [ads-txt.crawl :as c]
+            [adstxt.db.core :as db]
+            [adstxt.crawl :as c]
             [clojure.data.json :as json]
             [ring.util.response :refer [response content-type]]
             [ring.util.http-response :as response]))
@@ -65,9 +65,9 @@
               (format "```\n%s\n```\n" (table labels records)))
    :attachments [
 
-                 {:text (format "<https://ads-txt.herokuapp.com/download/records/%d|Download>" (:id id))}
+                 {:text (format "<https://adstxt.herokuapp.com/download/records/%d|Download>" (:id id))}
                  {:text (format "<%s|Ads.txt file>" (:url (db/get-domain-by-id id)))}
-                 {:text (format "<%s|More information>" "https://ads-txt.herokuapp.com/")}
+                 {:text (format "<%s|More information>" "https://adstxt.herokuapp.com/")}
                  ]
    }
   )
@@ -78,7 +78,7 @@
    :text (format "No Ads.txt file data found for '%s'" domain)
    :attachments [
                  {:text (format "<%s|Ads.txt file>" (:url (db/get-domain-by-id id)))}
-                 {:text (format "<%s|More information>" "https://ads-txt.herokuapp.com/")}
+                 {:text (format "<%s|More information>" "https://adstxt.herokuapp.com/")}
                  ]
    }
   )
@@ -88,7 +88,7 @@
    :mrkdwn true
    :text (format "The submitted domain '%s' does not appear to be valid." domain)
    :attachments [
-                 {:text (format "<%s|More information>" "https://ads-txt.herokuapp.com/")}
+                 {:text (format "<%s|More information>" "https://adstxt.herokuapp.com/")}
                  ]
    }
   )
@@ -116,8 +116,8 @@
               ;; Put records in a table
               ;; Link to Ads.txt file
               ;; (:url (db/get-domain-by-id id))
-              ;; Link to Ads-txt output
-              ;; https://ads-txt.herokuapp.com/records/[ID]
+              ;; Link to adstxt output
+              ;; https://adstxt.herokuapp.com/records/[ID]
               (response/ok (build-slack-json domain id labels records)))
             (response/ok (build-slack-json-no-records domain id)))))
       (response/ok (build-slack-invalid-domain domain)))))

@@ -1,11 +1,11 @@
-(defproject ads-txt "0.0.8"
+(defproject adstxt "0.0.8"
 
-  :description "A site which uses `ads-txt-crawler` to retrieve and store Ads.txt file contents"
-  :url "http://ads-txt.herokuapp.com/"
+  :description "A site which uses `adstxt-crawler` to retrieve and store Ads.txt file contents"
+  :url "http://adstxt.herokuapp.com/"
 
   :dependencies [[clj-time "0.14.0"]
                  [clojurewerkz/urly "1.0.0"]
-                 [com.bradlucas/ads-txt-crawler "0.0.9"]
+                 [com.bradlucas/adstxt-crawler "0.0.9"]
                  [compojure "1.6.0"]
                  [conman "0.6.8"]
                  [cprop "0.1.11"]
@@ -42,7 +42,7 @@
   :test-paths ["test/clj"]
   :resource-paths ["resources"]
   :target-path "target/%s/"
-  :main ^:skip-aot ads-txt.core
+  :main ^:skip-aot adstxt.core
   :migratus {:store :database :db ~(get (System/getenv) "DATABASE_URL")}
 
   :plugins [[lein-cprop "1.0.3"]
@@ -52,7 +52,7 @@
   :profiles
   {:uberjar {:omit-source true
              :aot :all
-             :uberjar-name "ads-txt.jar"
+             :uberjar-name "adstxt.jar"
              :source-paths ["env/prod/clj"]
              :resource-paths ["env/prod/resources"]}
 

@@ -1,14 +1,14 @@
-(ns ads-txt.crawl
-  (:require [ads-txt-crawler.crawl :as c]
-            [ads-txt-crawler.domains :as d]
-            [ads-txt.db.core :as db]
-            [ads-txt-crawler.httpkit :as h]
+(ns adstxt.crawl
+  (:require [adstxt-crawler.crawl :as c]
+            [adstxt-crawler.domains :as d]
+            [adstxt.db.core :as db]
+            [adstxt-crawler.httpkit :as h]
             [clojurewerkz.urly.core :refer [url-like as-map]]
             [ring.util.http-response :as response]
             [struct.core :as st]))
 
 
-;; interface to ads-txt-crawler
+;; interface to adstxt-crawler
 
 (def name-schema
   [[:name

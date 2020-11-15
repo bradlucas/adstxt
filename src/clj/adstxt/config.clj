@@ -1,4 +1,4 @@
-(ns ads-txt.config
+(ns adstxt.config
   (:require [cprop.core :refer [load-config]]
             [cprop.source :as source]
             [mount.core :refer [args defstate]]))
