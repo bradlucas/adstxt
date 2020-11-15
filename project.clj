@@ -1,4 +1,4 @@
-(defproject adstxt "0.0.8"
+(defproject adstxt "0.0.9"
 
   :description "A site which uses `adstxt-crawler` to retrieve and store Ads.txt file contents"
   :url "http://adstxt.herokuapp.com/"
