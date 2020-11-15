@@ -1,7 +1,7 @@
 #!/bin/bash                                                                                                                                                                                                
 
 LOG=output.log
-JAR=adstxt-0.0.8-standalone.jar
+JAR=`find . -name adstxt-0.0.*-standalone.jar` 
 
 rm -f $LOG
 
