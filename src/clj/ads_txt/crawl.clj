@@ -2,6 +2,7 @@
   (:require [ads-txt-crawler.crawl :as c]
             [ads-txt-crawler.domains :as d]
             [ads-txt.db.core :as db]
+            [ads-txt-crawler.httpkit :as h]
             [clojurewerkz.urly.core :refer [url-like as-map]]
             [ring.util.http-response :as response]
             [struct.core :as st]))
@@ -25,21 +26,11 @@
     (d/strip-www hostname)))
 
 
-;; (defn save-domain! [{:keys [params]}]
-;;   (if-let [hostname (hostname (:name params))]
-;;     (let [params (assoc params :name hostname)]
-;;       (if-let [errors (validate-name params)]
-;;         ;; TODO move this back into hme.clj or similar
-;;         (-> (response/found "/domains")
-;;             (assoc :flash (assoc params :errors errors)))
-;;         (do
-;;           (try
-;;             (db/save-domain! params)
-;;             (catch java.lang.Exception e
-;;               ;; ignore duplicate entries
-;;               ))
-;;           hostname)))))
-
+(defn valid-domain [domain]
+  ;; build-url
+  (let [url (format "http://%s" domain)
+        {:keys [status headers body error] :as resp} (h/get-url url)]
+    (= 200 status)))
 
 (defn save-domain! [{:keys [params]}]
   (let [hostname (hostname (:name params))]
@@ -48,13 +39,21 @@
         (try
           ;; if we've already crawled this domain, delete previous records
           (if-let [id (db/get-domain-id {:name hostname})]
-            (db/delete-domain-records id)
-            (db/save-domain! params))
+            (db/delete-domain-records id)   ;; TODO Probably should null the crawldate as well
+            (db/save-domain! {:name hostname}))
           (catch java.lang.Exception e
             ;; ignore duplicate entries
             ))
         hostname)
         nil)))
+
+(defn save-new-domain! [domain]
+  (let [hostname (hostname domain)]
+    (if (st/valid? {:name hostname} name-schema)
+      (if-not (db/get-domain-id {:name hostname})
+        (do
+          (println (format "save-new-domain! %s" hostname))
+          (db/save-domain! {:name hostname}))))))
 
 
 (defn crawl-domain-save [domain-name]
@@ -62,7 +61,7 @@
         records (:records (c/get-data domain-name))
         data (filter (fn [r] (and (not-empty (:account-id r)) (not-empty (:account-id r)))) records)]
     (println (format "Crawling %s" domain-name))
-    (db/save-domain-url (assoc id  :url (c/build-url domain-name)))    ;; TODO this should be done more clearly elsewhere
+    (db/update-domain-url (assoc id  :url (c/build-url domain-name)))    ;; TODO this should be done more clearly elsewhere
     (doseq [[idx d] (map-indexed (fn [i v] [i v]) data)]
       (try
         (db/save-record! {:domain_id (:id id)
@@ -95,3 +94,76 @@
     (doseq [domain domains]
       (save-domain! {:params domain})  
       (crawl-domain-save (:name domain)))))
+
+(defn crawl-new-domains []
+  ;; crawl domains without a crawldate
+  (let [domains (db/get-domains-null-crawldate)]
+    (doseq [domain domains]
+      (save-domain! {:params domain})
+      (try 
+        (crawl-domain-save (:name domain))
+        (catch Exception e
+          (println (format "Exception crawling %s" domain))
+          )))))
+
+
+
+
+;; Update valid-domain for all domains
+(defn check-domains-for-valid-domains []
+  (let [domains (db/get-domains)]
+    (doseq [domain domains]
+      (let [name (:name domain)]
+        (if (valid-domain name)
+          (println (format "Valid   : '%s'" name))
+          (println (format "Invalid : '%s'" name))
+        )))))
+        
+(defn check-records-for-valid-domains []
+  (let [records (db/get-records)]
+    (doseq [record records]
+      (let [name (:name record)]
+        (if (valid-domain name)
+          (println (format "Valid   : '%s'" name))
+          (println (format "Invalid : '%s'" name))
+        )))))
+
+
+(defn report-domain-errors []
+  (println "--------------------------------------------------")
+  (println "Invalid domains in the Domains table")
+  (println "--------------------------------------------------")
+  (let [domains (db/get-domains)]
+    (doseq [domain domains]
+      (if (not (valid-domain (:name domain)))
+        (println (format "%d,%s" (:id domain) (:name domain))))))
+  (println "--------------------------------------------------")
+  (println "--------------------------------------------------")
+  (println "Invalid domains in the Records Table")
+  (println "--------------------------------------------------")
+  (let [records (db/get-records)]
+    (doseq [record records]
+      (if (not (valid-domain (:exchange_domain record)))
+        (println (format "%s,%s,%s,%s" (:name record) (:exchange_domain record) (:seller_account_id record) (:tag_id record))))))
+  (println "--------------------------------------------------"))
+
+
+(defn report-domains-status []
+  (let [domains (db/get-domains)]
+    (doseq [domain domains]
+      (let [url (format "http://%s" (:name domain))
+            {:keys [status headers body error] :as resp} (h/get-url url)]
+        (if (or (nil? status) (not (= 200 status)))
+          (println (format "%s - %d" (:name domain) status)))))))
+
+
+(defn report-records-domains-status []
+  (let [records (db/get-records)]
+    (doseq [record records]
+      
+      (let [domain (:exchange_domain record)
+            url (format "http://%s" domain)
+            {:keys [status headers body error] :as resp} (h/get-url url)]
+        (if (or (nil? status) (not (= 200 status)))
+          (println (format "%d,%s,%s,%s,%s,%d" (:domain_id record) domain (:seller_account_id record) (:account_type record) (:tag_id record) status)))
+        ))))
