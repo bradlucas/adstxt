@@ -1,6 +1,6 @@
-# ads-txt
+# adstxt
 
-A site which uses `ads-txt-crawler` to retrieve and store Ads.txt file contents
+A site which uses `adstxt-crawler` to retrieve and store Ads.txt file contents
 
 
 

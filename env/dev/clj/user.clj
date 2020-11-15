@@ -1,14 +1,14 @@
 (ns user
   (:require [luminus-migrations.core :as migrations]
-            [ads-txt.config :refer [env]]
+            [adstxt.config :refer [env]]
             [mount.core :as mount]
-            ads-txt.core))
+            adstxt.core))
 
 (defn start []
-  (mount/start-without #'ads-txt.core/repl-server))
+  (mount/start-without #'adstxt.core/repl-server))
 
 (defn stop []
-  (mount/stop-except #'ads-txt.core/repl-server))
+  (mount/stop-except #'adstxt.core/repl-server))
 
 (defn restart []
   (stop)
